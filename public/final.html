@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#0a0a0c" />
+  <title>Soumi · Birthday</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0a0a0c;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #fff;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #c {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* =========================
+       BIRTHDAY TEXT
+       ========================= */
+
+    .birthday-message {
+      position: fixed;
+      left: 50%;
+      bottom: calc(7vh + env(safe-area-inset-bottom, 0px));
+      transform: translate(-50%, 22px);
+      width: min(94vw, 760px);
+      text-align: center;
+      z-index: 7;
+      pointer-events: none;
+      opacity: 0;
+      transition:
+        opacity 1.4s ease,
+        transform 1.4s cubic-bezier(.2,.75,.25,1);
+    }
+
+    .birthday-message.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    .birthday-title {
+      display: block;
+      font-family:
+        "Brush Script MT",
+        "Segoe Script",
+        "Lucida Handwriting",
+        cursive;
+      font-size: clamp(38px, 8vw, 76px);
+      line-height: 0.95;
+      font-weight: 700;
+      letter-spacing: 0.015em;
+
+      color: #fff4df;
+
+      text-shadow:
+        0 0 5px rgba(255, 235, 180, 0.95),
+        0 0 14px rgba(255, 185, 105, 0.75),
+        0 0 30px rgba(255, 120, 70, 0.45);
+
+      background:
+        linear-gradient(
+          180deg,
+          #fffdf4 0%,
+          #ffd98d 38%,
+          #ff9d72 70%,
+          #fff1c7 100%
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .birthday-name {
+      display: block;
+      margin-top: 8px;
+
+      font-family:
+        "Brush Script MT",
+        "Segoe Script",
+        "Lucida Handwriting",
+        cursive;
+
+      font-size: clamp(54px, 11vw, 104px);
+      line-height: 0.9;
+      font-weight: 700;
+      letter-spacing: 0.025em;
+
+      color: #ffd7df;
+
+      text-shadow:
+        0 0 5px rgba(255, 245, 245, 1),
+        0 0 12px rgba(255, 110, 145, 0.95),
+        0 0 28px rgba(255, 45, 90, 0.7),
+        0 0 55px rgba(255, 20, 80, 0.35);
+
+      background:
+        linear-gradient(
+          180deg,
+          #fff8fa 0%,
+          #ffccd7 25%,
+          #ff7897 65%,
+          #ffb7c7 100%
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .birthday-line {
+      position: relative;
+      width: min(72vw, 430px);
+      height: 1px;
+      margin: 13px auto 0;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 220, 180, 0.9),
+        transparent
+      );
+      box-shadow: 0 0 10px rgba(255, 180, 130, 0.45);
+    }
+
+    .birthday-line::before,
+    .birthday-line::after {
+      content: "♥";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 17px;
+      color: #ff9aae;
+      text-shadow: 0 0 10px #ff5878;
+    }
+
+    .birthday-line::before {
+      left: -10px;
+    }
+
+    .birthday-line::after {
+      right: -10px;
+    }
+
+    .spark {
+      position: absolute;
+      color: #fff5d8;
+      text-shadow:
+        0 0 5px #fff,
+        0 0 12px #ffc27a;
+      animation: sparkle 1.8s ease-in-out infinite;
+    }
+
+    .spark.s1 {
+      left: 7%;
+      top: 12%;
+      font-size: 16px;
+    }
+
+    .spark.s2 {
+      right: 8%;
+      top: 18%;
+      font-size: 20px;
+      animation-delay: 0.4s;
+    }
+
+    .spark.s3 {
+      left: 18%;
+      bottom: 7%;
+      font-size: 12px;
+      animation-delay: 0.8s;
+    }
+
+    .spark.s4 {
+      right: 19%;
+      bottom: 6%;
+      font-size: 13px;
+      animation-delay: 1.1s;
+    }
+
+    @keyframes sparkle {
+      0%, 100% {
+        opacity: 0.25;
+        transform: scale(0.75) rotate(0deg);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.25) rotate(20deg);
+      }
+    }
+
+    /* =========================
+       HINT
+       ========================= */
+
+    .hint {
+      position: fixed;
+      left: 50%;
+      bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+      transform: translateX(-50%);
+      z-index: 5;
+
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+
+      color: rgba(255,255,255,0.45);
+      pointer-events: none;
+
+      opacity: 0;
+      transition: opacity 1s ease;
+    }
+
+    .hint.show {
+      opacity: 1;
+    }
+
+    /* =========================
+       CONTROLS
+       ========================= */
+
+    .controls {
+      position: fixed;
+      right: 14px;
+      top: calc(12px + env(safe-area-inset-top, 0px));
+      z-index: 10;
+
+      display: flex;
+      gap: 8px;
+
+      opacity: 0;
+      transition: opacity 0.8s ease;
+    }
+
+    .controls.show {
+      opacity: 1;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.2);
+
+      background: rgba(0,0,0,0.38);
+      color: #fff3e8;
+
+      font-size: 17px;
+      cursor: pointer;
+
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+
+      box-shadow:
+        0 5px 20px rgba(0,0,0,0.25),
+        inset 0 0 15px rgba(255,255,255,0.04);
+
+      transition:
+        transform 0.2s ease,
+        background 0.2s ease;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.92);
+    }
+
+    .icon-btn.muted {
+      opacity: 0.45;
+    }
+
+    /* =========================
+       START SCREEN
+       ========================= */
+
+    .start {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+
+      background:
+        radial-gradient(
+          circle at center,
+          #201018 0%,
+          #0a0a0c 58%,
+          #050507 100%
+        );
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+
+      transition:
+        opacity 0.7s ease,
+        visibility 0.7s ease;
+    }
+
+    .start.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .start p {
+      color: rgba(255,255,255,0.52);
+      font-size: 0.86rem;
+      letter-spacing: 0.04em;
+    }
+
+    .start button {
+      border: 1px solid rgba(255, 105, 135, 0.6);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(220,20,60,0.25),
+          rgba(255,110,140,0.08)
+        );
+
+      color: #fff5f7;
+
+      padding: 13px 32px;
+      border-radius: 999px;
+
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 0 25px rgba(220,20,60,0.15),
+        inset 0 0 15px rgba(255,255,255,0.03);
+
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+    }
+
+    .start button:hover {
+      transform: translateY(-2px);
+      box-shadow:
+        0 0 30px rgba(220,20,60,0.3);
+    }
+
+    .start button:active {
+      transform: scale(0.96);
+    }
+
+    /* =========================
+       MOBILE
+       ========================= */
+
+    @media (max-width: 600px) {
+      .birthday-message {
+        bottom: calc(8vh + env(safe-area-inset-bottom, 0px));
+        width: 96vw;
+      }
+
+      .birthday-title {
+        font-size: clamp(34px, 10vw, 50px);
+      }
+
+      .birthday-name {
+        font-size: clamp(58px, 17vw, 82px);
+        margin-top: 5px;
+      }
+
+      .birthday-line {
+        margin-top: 10px;
+      }
+
+      .hint {
+        display: none;
+      }
+
+      .controls {
+        right: 10px;
+      }
+
+      .icon-btn {
+        width: 39px;
+        height: 39px;
+      }
+    }
+
+    @media (max-height: 650px) {
+      .birthday-message {
+        bottom: calc(3vh + env(safe-area-inset-bottom, 0px));
+      }
+
+      .birthday-title {
+        font-size: clamp(30px, 7vw, 52px);
+      }
+
+      .birthday-name {
+        font-size: clamp(46px, 10vw, 70px);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Particle portrait -->
+  <canvas id="c"></canvas>
+
+  <!-- =========================
+       BIRTHDAY MESSAGE
+       ========================= -->
+
+  <div class="birthday-message" id="birthdayMessage">
+    <span class="spark s1">✦</span>
+    <span class="spark s2">✧</span>
+    <span class="spark s3">✦</span>
+    <span class="spark s4">✧</span>
+
+    <span class="birthday-title">Happy Birthday</span>
+    <span class="birthday-name">Soumi</span>
+
+    <div class="birthday-line"></div>
+  </div>
+
+  <p class="hint" id="hint">
+    Made with love · Soumi
+  </p>
+
+  <!-- Controls -->
+  <div class="controls" id="controls">
+    <button
+      type="button"
+      class="icon-btn"
+      id="musicBtn"
+      title="Music"
+      aria-label="Music"
+    >♪</button>
+
+    <button
+      type="button"
+      class="icon-btn"
+      id="replayBtn"
+      title="Replay"
+      aria-label="Replay"
+    >↻</button>
+  </div>
+
+  <!-- Start screen -->
+  <div class="start" id="start">
+    <p>Tap to reveal the portrait — the last little gift I made just for you. ✨❤️</p>
+    <button
+      type="button"
+      id="go"
+    >
+      Begin
+    </button>
+  </div>
+
+  <!-- =========================
+       MUSIC
+       Change this path if needed
+       ========================= -->
+
+  <audio id="bgMusic" loop preload="auto">
+    <source
+      src="audio/song3.mpeg"
+      type="audio/mpeg"
+    />
+  </audio>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* =========================================
+       SETTINGS
+       ========================================= */
+
+    const IMAGE_SRC = "img/soumi.jpg";
+
+    /*
+     * Higher value = slower particle formation.
+     * 8 seconds gives a much smoother effect.
+     */
+    const FORM_SECONDS = 8;
+
+    /*
+     * Particle movement.
+     * Smaller value = slower.
+     */
+    const MOVE_SPEED = 0.012;
+
+    /* =========================================
+       ELEMENTS
+       ========================================= */
+
+    const canvas = document.getElementById("c");
+    const ctx = canvas.getContext("2d", {
+      alpha: true
+    });
+
+    const hint = document.getElementById("hint");
+    const start = document.getElementById("start");
+    const go = document.getElementById("go");
+
+    const music = document.getElementById("bgMusic");
+    const musicBtn = document.getElementById("musicBtn");
+    const replayBtn = document.getElementById("replayBtn");
+    const controls = document.getElementById("controls");
+
+    const birthdayMessage =
+      document.getElementById("birthdayMessage");
+
+    /* =========================================
+       STATE
+       ========================================= */
+
+    let W = 0;
+    let H = 0;
+    let dpr = 1;
+
+    let particles = [];
+    let dust = [];
+
+    let started = false;
+    let formed = false;
+
+    let startTime = 0;
+    let animId = 0;
+
+    let imgW = 0;
+    let imgH = 0;
+
+    let musicOn = false;
+
+    let cachedImg = null;
+
+    let resizeTimer = null;
+
+    /* =========================================
+       RESIZE
+       ========================================= */
+
+    function resize() {
+      dpr = Math.min(
+        window.devicePixelRatio || 1,
+        2
+      );
+
+      W = window.innerWidth;
+      H = window.innerHeight;
+
+      canvas.width =
+        Math.floor(W * dpr);
+
+      canvas.height =
+        Math.floor(H * dpr);
+
+      canvas.style.width =
+        W + "px";
+
+      canvas.style.height =
+        H + "px";
+
+      ctx.setTransform(
+        dpr,
+        0,
+        0,
+        dpr,
+        0,
+        0
+      );
+    }
+
+    /* =========================================
+       LOAD IMAGE
+       ========================================= */
+
+    function loadImage(src) {
+      return new Promise(
+        function (resolve, reject) {
+          const img = new Image();
+
+          img.onload = function () {
+            resolve(img);
+          };
+
+          img.onerror = function () {
+            reject(
+              new Error(
+                "Could not load image: " + src
+              )
+            );
+          };
+
+          img.src = src;
+        }
+      );
+    }
+
+    /* =========================================
+       BACKGROUND DUST
+       ========================================= */
+
+    function makeDust() {
+      dust = [];
+
+      const count =
+        W < 600 ? 45 : 70;
+
+      for (
+        let i = 0;
+        i < count;
+        i++
+      ) {
+        dust.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+
+          r:
+            0.35 +
+            Math.random() * 1.1,
+
+          vx:
+            (Math.random() - 0.5) *
+            0.12,
+
+          vy:
+            -0.04 -
+            Math.random() * 0.12,
+
+          a:
+            0.05 +
+            Math.random() * 0.14
+        });
+      }
+    }
+
+    /* =========================================
+       BUILD PARTICLES FROM IMAGE
+       ========================================= */
+
+    function buildFromImage(img) {
+      particles = [];
+
+      if (!img) {
+        return;
+      }
+
+      const isMobile =
+        W < 600;
+
+      /*
+       * Portrait size.
+       */
+      const maxBox =
+        Math.min(
+          W * 0.88,
+          H * 0.62,
+          isMobile ? 360 : 520
+        );
+
+      const ratio =
+        img.width / img.height;
+
+      let dw;
+      let dh;
+
+      if (ratio > 1) {
+        dw = maxBox;
+        dh = maxBox / ratio;
+      } else {
+        dh = maxBox;
+        dw = maxBox * ratio;
+      }
+
+      imgW = dw;
+      imgH = dh;
+
+      /*
+       * Sampling canvas.
+       * Higher resolution = clearer portrait.
+       */
+      const sample =
+        document.createElement("canvas");
+
+      const sampleW =
+        Math.min(
+          isMobile ? 230 : 300,
+          Math.max(1, Math.floor(dw))
+        );
+
+      const sampleH =
+        Math.min(
+          isMobile ? 230 : 300,
+          Math.max(1, Math.floor(dh))
+        );
+
+      sample.width = sampleW;
+      sample.height = sampleH;
+
+      const sctx =
+        sample.getContext(
+          "2d",
+          { willReadFrequently: true }
+        );
+
+      sctx.clearRect(
+        0,
+        0,
+        sampleW,
+        sampleH
+      );
+
+      sctx.drawImage(
+        img,
+        0,
+        0,
+        sampleW,
+        sampleH
+      );
+
+      let data;
+
+      try {
+        data =
+          sctx.getImageData(
+            0,
+            0,
+            sampleW,
+            sampleH
+          ).data;
+      } catch (error) {
+        console.error(
+          "Image pixel access failed:",
+          error
+        );
+        return;
+      }
+
+      /*
+       * Center the portrait.
+       * Keep it a little above center so
+       * birthday text has its own space below.
+       */
+      const ox =
+        (W - dw) / 2;
+
+      const oy =
+        (H - dh) / 2 -
+        H * 0.10;
+
+      /*
+       * Smaller gap = more particles.
+       */
+      const gap =
+        isMobile ? 2 : 2;
+
+      const maxParticles =
+        isMobile ? 3600 : 6000;
+
+      const points = [];
+
+      for (
+        let y = 0;
+        y < sampleH;
+        y += gap
+      ) {
+        for (
+          let x = 0;
+          x < sampleW;
+          x += gap
+        ) {
+          const index =
+            (y * sampleW + x) * 4;
+
+          const r = data[index];
+          const g = data[index + 1];
+          const b = data[index + 2];
+          const a = data[index + 3];
+
+          /*
+           * Ignore transparent pixels.
+           */
+          if (a < 35) {
+            continue;
+          }
+
+          points.push({
+            tx:
+              ox +
+              (x / sampleW) * dw,
+
+            ty:
+              oy +
+              (y / sampleH) * dh,
+
+            r: r,
+            g: g,
+            b: b
+          });
+        }
+      }
+
+      if (!points.length) {
+        console.error(
+          "No particles generated from image."
+        );
+        return;
+      }
+
+      /*
+       * Reduce particles if needed.
+       */
+      let step = 1;
+
+      if (
+        points.length >
+        maxParticles
+      ) {
+        step =
+          Math.ceil(
+            points.length /
+            maxParticles
+          );
+      }
+
+      for (
+        let i = 0;
+        i < points.length;
+        i += step
+      ) {
+        const p = points[i];
+
+        particles.push({
+          x:
+            Math.random() * W,
+
+          y:
+            Math.random() * H,
+
+          tx: p.tx,
+          ty: p.ty,
+
+          pr: p.r,
+          pg: p.g,
+          pb: p.b,
+
+          size:
+            isMobile
+              ? 0.72 +
+                Math.random() * 0.45
+              : 0.82 +
+                Math.random() * 0.5,
+
+          /*
+           * Stagger the formation.
+           */
+          delay:
+            Math.random() *
+            (FORM_SECONDS * 0.65),
+
+          settled: false
+        });
+      }
+    }
+
+    /* =========================================
+       DRAW DUST
+       ========================================= */
+
+    function drawDust() {
+      for (
+        let i = 0;
+        i < dust.length;
+        i++
+      ) {
+        const d = dust[i];
+
+        d.x += d.vx;
+        d.y += d.vy;
+
+        if (d.y < -5) {
+          d.y = H + 5;
+          d.x =
+            Math.random() * W;
+        }
+
+        if (d.x < -5) {
+          d.x = W + 5;
+        }
+
+        if (d.x > W + 5) {
+          d.x = -5;
+        }
+
+        ctx.beginPath();
+
+        ctx.arc(
+          d.x,
+          d.y,
+          d.r,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fillStyle =
+          "rgba(255,200,210," +
+          d.a +
+          ")";
+
+        ctx.fill();
+      }
+    }
+
+    /* =========================================
+       SOFT BACKGROUND GLOW
+       ========================================= */
+
+    function drawGlow() {
+      const gx = W / 2;
+      const gy = H * 0.40;
+
+      const rad =
+        Math.max(
+          imgW,
+          imgH
+        ) * 0.8 || 250;
+
+      const gradient =
+        ctx.createRadialGradient(
+          gx,
+          gy,
+          0,
+          gx,
+          gy,
+          rad
+        );
+
+      gradient.addColorStop(
+        0,
+        "rgba(80,25,45,0.32)"
+      );
+
+      gradient.addColorStop(
+        0.5,
+        "rgba(40,15,25,0.12)"
+      );
+
+      gradient.addColorStop(
+        1,
+        "rgba(10,10,12,0)"
+      );
+
+      ctx.fillStyle = gradient;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        gx,
+        gy,
+        rad,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+    }
+
+    /* =========================================
+       DRAW PARTICLE
+       ========================================= */
+
+    function drawParticle(p) {
+      /*
+       * Tiny glow around each particle.
+       */
+      const glow =
+        p.size * 3.8;
+
+      const gradient =
+        ctx.createRadialGradient(
+          p.x,
+          p.y,
+          0,
+          p.x,
+          p.y,
+          glow
+        );
+
+      /*
+       * Preserve original image colours
+       * while adding a subtle warm glow.
+       */
+      gradient.addColorStop(
+        0,
+        "rgba(" +
+        p.pr +
+        "," +
+        p.pg +
+        "," +
+        p.pb +
+        ",0.35)"
+      );
+
+      gradient.addColorStop(
+        1,
+        "rgba(" +
+        p.pr +
+        "," +
+        p.pg +
+        "," +
+        p.pb +
+        ",0)"
+      );
+
+      ctx.fillStyle =
+        gradient;
+
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        glow,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fill();
+
+      /*
+       * Actual particle.
+       */
+      ctx.beginPath();
+
+      ctx.arc(
+        p.x,
+        p.y,
+        p.size,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fillStyle =
+        "rgb(" +
+        p.pr +
+        "," +
+        p.pg +
+        "," +
+        p.pb +
+        ")";
+
+      ctx.fill();
+    }
+
+    /* =========================================
+       MAIN ANIMATION
+       ========================================= */
+
+    function frame(now) {
+      if (!startTime) {
+        startTime = now;
+      }
+
+      const t =
+        (now - startTime) / 1000;
+
+      ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+      );
+
+      drawDust();
+      drawGlow();
+
+      /*
+       * Start assembling shortly after Begin.
+       */
+      const assemble =
+        t > 0.5;
+
+      for (
+        let i = 0;
+        i < particles.length;
+        i++
+      ) {
+        const p = particles[i];
+
+        if (
+          assemble &&
+          t >
+            p.delay + 0.45
+        ) {
+          const dx =
+            p.tx - p.x;
+
+          const dy =
+            p.ty - p.y;
+
+          /*
+           * Slow, smooth movement.
+           */
+          p.x +=
+            dx * MOVE_SPEED;
+
+          p.y +=
+            dy * MOVE_SPEED;
+
+          /*
+           * Lock particle once it is
+           * close enough.
+           */
+          if (
+            Math.abs(dx) < 0.22 &&
+            Math.abs(dy) < 0.22
+          ) {
+            p.x = p.tx;
+            p.y = p.ty;
+            p.settled = true;
+          }
+        } else {
+          /*
+           * Very gentle floating before
+           * each particle starts travelling.
+           */
+          p.x +=
+            Math.sin(
+              t * 0.42 +
+              i * 0.011
+            ) * 0.055;
+
+          p.y +=
+            Math.cos(
+              t * 0.36 +
+              i * 0.013
+            ) * 0.045;
+        }
+
+        drawParticle(p);
+      }
+
+      /*
+       * Show birthday text after the
+       * portrait has mostly formed.
+       */
+      if (
+        assemble &&
+        t >
+          FORM_SECONDS + 0.6 &&
+        !formed
+      ) {
+        formed = true;
+
+        birthdayMessage.classList.add(
+          "show"
+        );
+
+        hint.classList.add(
+          "show"
+        );
+      }
+
+      animId =
+        requestAnimationFrame(
+          frame
+        );
+    }
+
+    /* =========================================
+       MUSIC
+       ========================================= */
+
+    async function startMusic() {
+      if (!music) {
+        return;
+      }
+
+      try {
+        music.volume = 1;
+
+        await music.play();
+
+        musicOn = true;
+
+        musicBtn.classList.remove(
+          "muted"
+        );
+
+        musicBtn.textContent = "♪";
+      } catch (error) {
+        musicOn = false;
+
+        musicBtn.classList.add(
+          "muted"
+        );
+
+        musicBtn.textContent = "🔇";
+
+        console.warn(
+          "Music could not start:",
+          error
+        );
+      }
+    }
+
+    function toggleMusic() {
+      if (!music) {
+        return;
+      }
+
+      if (musicOn) {
+        music.pause();
+
+        musicOn = false;
+
+        musicBtn.classList.add(
+          "muted"
+        );
+
+        musicBtn.textContent =
+          "🔇";
+      } else {
+        startMusic();
+      }
+    }
+
+    /* =========================================
+       REPLAY
+       ========================================= */
+
+    function replay() {
+      if (!cachedImg) {
+        return;
+      }
+
+      formed = false;
+
+      birthdayMessage.classList.remove(
+        "show"
+      );
+
+      hint.classList.remove(
+        "show"
+      );
+
+      /*
+       * Re-create particles at random
+       * positions for a fresh animation.
+       */
+      buildFromImage(
+        cachedImg
+      );
+
+      startTime = 0;
+
+      cancelAnimationFrame(
+        animId
+      );
+
+      animId =
+        requestAnimationFrame(
+          frame
+        );
+    }
+
+    /* =========================================
+       BEGIN
+       ========================================= */
+
+    async function begin() {
+      if (started) {
+        return;
+      }
+
+      started = true;
+
+      start.classList.add(
+        "hide"
+      );
+
+      controls.classList.add(
+        "show"
+      );
+
+      resize();
+      makeDust();
+
+      /*
+       * Load image first.
+       */
+      try {
+        cachedImg =
+          await loadImage(
+            IMAGE_SRC
+          );
+
+        buildFromImage(
+          cachedImg
+        );
+
+        /*
+         * Music is started from the
+         * user's button interaction.
+         */
+        startMusic();
+
+        startTime = 0;
+
+        cancelAnimationFrame(
+          animId
+        );
+
+        animId =
+          requestAnimationFrame(
+            frame
+          );
+      } catch (error) {
+        console.error(error);
+
+        hint.textContent =
+          "Image failed to load";
+
+        hint.classList.add(
+          "show"
+        );
+      }
+    }
+
+    /* =========================================
+       EVENTS
+       ========================================= */
+
+    go.addEventListener(
+      "click",
+      begin
+    );
+
+    musicBtn.addEventListener(
+      "click",
+      toggleMusic
+    );
+
+    replayBtn.addEventListener(
+      "click",
+      replay
+    );
+
+    /*
+     * Resize safely.
+     */
+    window.addEventListener(
+      "resize",
+      function () {
+        clearTimeout(
+          resizeTimer
+        );
+
+        resizeTimer =
+          setTimeout(
+            function () {
+              resize();
+              makeDust();
+
+              /*
+               * Rebuild targets on resize
+               * so portrait stays centred.
+               */
+              if (
+                started &&
+                cachedImg
+              ) {
+                const wasFormed =
+                  formed;
+
+                buildFromImage(
+                  cachedImg
+                );
+
+                /*
+                 * If already formed,
+                 * immediately place particles
+                 * on their new targets.
+                 */
+                if (wasFormed) {
+                  for (
+                    let i = 0;
+                    i < particles.length;
+                    i++
+                  ) {
+                    particles[i].x =
+                      particles[i].tx;
+
+                    particles[i].y =
+                      particles[i].ty;
+
+                    particles[i].settled =
+                      true;
+                  }
+                }
+              }
+            },
+            150
+          );
+      },
+      { passive: true }
+    );
+
+    /* =========================================
+       INITIALIZE
+       ========================================= */
+
+    resize();
+    makeDust();
+
+  })();
+  </script>
+
+</body>
+</html>

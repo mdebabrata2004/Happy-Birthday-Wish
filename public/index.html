@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Countdown</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #ffb6c1, #ffe4e1);
+      font-family: "Noto Sans Bengali", sans-serif;
+      text-align: center;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #d63384;
+    }
+
+    .countdown {
+      display: flex;
+      gap: 15px;
+      margin: 20px 0;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .countdown div {
+      background: white;
+      border-radius: 10px;
+      padding: 10px 15px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    button {
+      background-color: #ff69b4;
+      border: none;
+      border-radius: 30px;
+      padding: 12px 25px;
+      font-size: 1.1em;
+      color: white;
+      cursor: not-allowed;
+      opacity: 0.5;
+      transition: all 0.3s ease;
+    }
+
+    button.active {
+      cursor: pointer;
+      opacity: 1;
+      background-color: #d63384;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+      100% { transform: scale(1); }
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    /* 📱 Mobile Responsive Design */
+  @media (max-width: 600px) {
+    h1 {
+      font-size: 1.6em;
+    }
+
+    .countdown {
+      gap: 10px;
+      font-size: 1em;
+    }
+
+    .countdown div {
+      padding: 8px 10px;
+      border-radius: 8px;
+      min-width: 50px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 25px;
+    }
+
+    footer {
+      font-size: 0.8em;
+      margin-top: 20px;
+    }
+  }
+
+  </style>
+</head>
+<body>
+
+  <h1>🎉 Countdown to Soumi's Birthday 🎉</h1>
+  <div class="countdown">
+    <div><span id="days">00</span><br>Days</div>
+    <div><span id="hours">00</span><br>Hours</div>
+    <div><span id="minutes">00</span><br>Minutes</div>
+    <div><span id="seconds">00</span><br>Seconds</div>
+  </div>
+
+  <button id="accessBtn" disabled>🎂 Access Now 🎂</button>
+
+<footer>💞 The magic will bloom on 16th September 2026 💞</footer>
+
+<script>
+(function () {
+  "use strict";
+
+  // 🔐 Protection Version
+  const SCRIPT_VERSION = "v8.0";
+
+  // 🎂 Birthday Unlock Date — 16 September 2026, 12:00 AM IST
+  const TARGET_DATE = new Date("2026-09-15T00:00:00+05:30");
+
+  // 🏠 Next page
+  const HOME_PAGE = "home.html";
+
+  // ─────────────────────────────
+  // DOM
+  // ─────────────────────────────
+  const daysEl = document.getElementById("days");
+  const hoursEl = document.getElementById("hours");
+  const minsEl = document.getElementById("minutes");
+  const secsEl = document.getElementById("seconds");
+  const btn = document.getElementById("accessBtn");
+
+
+  // ─────────────────────────────
+  // 🔄 VERSION PROTECTION
+  // ─────────────────────────────
+  try {
+    const savedVersion = localStorage.getItem("birthdayScriptVersion");
+
+    if (savedVersion !== SCRIPT_VERSION) {
+      // নতুন version হলে পুরোনো unlock reset
+      localStorage.removeItem("birthdayUnlocked");
+
+      // নতুন version save
+      localStorage.setItem(
+        "birthdayScriptVersion",
+        SCRIPT_VERSION
+      );
+    }
+  } catch (error) {
+    console.warn("Storage protection unavailable.");
+  }
+
+
+  // ─────────────────────────────
+  // ⏳ COUNTDOWN
+  // ─────────────────────────────
+  function updateCountdown() {
+
+    const now = new Date();
+    const diff = TARGET_DATE.getTime() - now.getTime();
+
+    // 🎉 Date reached
+    if (diff <= 0) {
+
+      daysEl.textContent = "00";
+      hoursEl.textContent = "00";
+      minsEl.textContent = "00";
+      secsEl.textContent = "00";
+
+      btn.disabled = false;
+      btn.classList.add("active");
+      btn.textContent = "🎂 Access Now 🎂";
+
+      return true;
+    }
+
+
+    // Remaining time
+    const days = Math.floor(
+      diff / (1000 * 60 * 60 * 24)
+    );
+
+    const hours = Math.floor(
+      (diff / (1000 * 60 * 60)) % 24
+    );
+
+    const minutes = Math.floor(
+      (diff / (1000 * 60)) % 60
+    );
+
+    const seconds = Math.floor(
+      (diff / 1000) % 60
+    );
+
+
+    daysEl.textContent =
+      String(days).padStart(2, "0");
+
+    hoursEl.textContent =
+      String(hours).padStart(2, "0");
+
+    minsEl.textContent =
+      String(minutes).padStart(2, "0");
+
+    secsEl.textContent =
+      String(seconds).padStart(2, "0");
+
+    return false;
+  }
+
+
+  // Start countdown
+  updateCountdown();
+
+  const countdownTimer = setInterval(() => {
+
+    if (updateCountdown()) {
+      clearInterval(countdownTimer);
+    }
+
+  }, 1000);
+
+
+  // ─────────────────────────────
+  // 🔐 ACCESS PROTECTION
+  // ─────────────────────────────
+  btn.addEventListener("click", () => {
+
+    // Button disabled হলে কিছু হবে না
+    if (btn.disabled) return;
+
+    // আবার server-independent local time check
+    const now = new Date();
+
+    // Date এখনো না এলে access বন্ধ
+    if (now.getTime() < TARGET_DATE.getTime()) {
+
+      btn.disabled = true;
+      btn.classList.remove("active");
+      btn.textContent = "⏳ Not Yet";
+
+      updateCountdown();
+
+      return;
+    }
+
+
+    // 🎉 Successfully unlocked
+    try {
+      localStorage.setItem(
+        "birthdayUnlocked",
+        "true"
+      );
+
+      localStorage.setItem(
+        "birthdayScriptVersion",
+        SCRIPT_VERSION
+      );
+
+    } catch (error) {
+      console.warn("Could not save unlock state.");
+    }
+
+
+    // 🏠 Go to home
+    window.location.replace(HOME_PAGE);
+
+  });
+
+
+  // ─────────────────────────────
+  // 🛡️ BACK BUTTON PROTECTION
+  // ─────────────────────────────
+  window.addEventListener("pageshow", () => {
+
+    // Countdown page-এ ফিরে এলে
+    // countdown আবার দেখাবে।
+    // এখানে redirect করা হবে না।
+    updateCountdown();
+
+  });
+
+
+})();
+</script>
+
+ 
+   <!-- 🛡️ Disable Right Click -->
+  <script>
+    document.addEventListener('contextmenu', e => e.preventDefault());
+  </script>
+
+
+<script type="module">
+    // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.19.0/firebase-analytics.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+  const firebaseConfig = {
+    apiKey: "AIzaSyB5hvTyMGgNC5KBKEXLLvMOjo79PcbJePQ",
+    authDomain: "soumihbd.firebaseapp.com",
+    projectId: "soumihbd",
+    storageBucket: "soumihbd.firebasestorage.app",
+    messagingSenderId: "308697687570",
+    appId: "1:308697687570:web:4d2b0144919bcfd4b95acb",
+    measurementId: "G-2ZV3D7WBFZ"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+</script>
+
+</body>
+</html>

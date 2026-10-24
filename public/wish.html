@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Happy Birthday Soumi 🎂</title>
+  <style>
+   @import url(https://fonts.googleapis.com/css?family=Nobile:400italic,700italic);
+html,
+body {
+  overflow: hidden;
+  background-color: #bf737d;
+  width: 100%;
+  height: 100%;
+}
+
+.card {
+  position: relative;
+  width: 300px;
+  height: 425px;
+  border: 10px solid #73bfb5;
+  margin: 50px auto 0 auto;
+  box-shadow: inset 10px 0px 15px 0px rgba(0, 0, 0, 0.1);
+  background-color: #fff98d;
+}
+
+.card .text-container {
+  width: 80%;
+  height: 80%;
+  margin: auto;
+}
+
+.strikethrough {
+  text-decoration: line-through;
+}
+
+.card .text-container #head {
+  font-family: "Nobile", sans-serif;
+  font-size: 1.5em;
+  margin: 60px auto 60px auto;
+}
+
+.card p {
+  font-size: 1.1em;
+  line-height: 1.4;
+  font-family: "Nobile";
+  color: #331717;
+  font-style: italic;
+  text-align: center;
+  margin: 30px auto 0px auto;
+}
+
+.card .front {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  margin: -10px 0px 0px -10px;
+  border: 10px solid #73bfb5;
+  backface-visibility: hidden;
+  background-color: #73a3bf;
+  /* background-image: url($cover-image); */
+  background-size: contain;
+  transform-style: preserve-3d;
+  transform-origin: 0% 50%;
+  transform: perspective(800px) rotateY(0deg);
+  transition: all 0.8s ease-in-out;
+}
+
+.card:hover .front {
+  transform: perspective(800px) rotateY(-170deg);
+  background-color: #41718d;
+}
+
+.card:hover .back {
+  transform: perspective(800px) rotateY(-170deg);
+  box-shadow: 7px 0px 5px 0px rgba(0, 0, 0, 0.3), inset 2px 0px 15px 0px rgba(0, 0, 0, 0.1);
+  background-color: #d2dcd2;
+}
+
+.card .back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 10px solid #73bfb5;
+  margin: -10px 0px 0px -10px;
+  backface-visibility: visible;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+  transform-style: preserve-3d;
+  transform-origin: 0% 50%;
+  transform: perspective(800px) rotateY(0deg);
+  transition: all 0.8s ease-in-out;
+  background-color: #e6f0e6;
+  box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.1);
+}
+
+.cover-shape-large {
+  position: absolute;
+  width: 65%;
+  height: 48%;
+  top: 25%;
+  left: 18%;
+  /* transform: rotateZ(45deg); */
+}
+
+.cover-shape-large .shape-block,
+.cover-shape-large .shape-diamond {
+  background-color: #73bf8f;
+}
+
+.cover-shape-small {
+  position: absolute;
+  width: 50%;
+  height: 36%;
+  top: 30%;
+  left: 25%;
+}
+
+.shape-block {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border-radius: 50px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+#shape-image {
+  background-image: url("http://freedesignfile.com/upload/2013/02/Birthday-cake-vector-4.jpg");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.shape-diamond {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+  transform: rotateZ(45deg);
+}
+
+/* cake animation stuff from: https://codepen.io/WithAnEs/pen/OVZRvg
+   not created by me! It's by Mark Thomes.
+*/
+.cake {
+  position: absolute;
+  width: 100px;
+  height: 80px;
+  top: 45%;
+  left: 50%;
+  margin-top: -28px;
+  margin-left: -50px;
+}
+
+.cake > * {
+  position: absolute;
+  /* backface-visibility: hidden; */
+}
+
+.layer {
+  position: absolute;
+  display: block;
+  width: 100px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #553c13;
+  box-shadow: 0 2px 0px #6a4b18, 0 4px 0px #33240b, 0 6px 0px #32230b, 0 8px 0px #31230b, 0 10px 0px #30220b, 0 12px 0px #2f220b, 0 14px 0px #2f210a, 0 16px 0px #2e200a, 0 18px 0px #2d200a, 0 20px 0px #2c1f0a, 0 22px 0px #2b1f0a, 0 24px 0px #2a1e09, 0 26px 0px #2a1d09, 0 28px 0px #291d09, 0 30px 0px #281c09;
+}
+
+.layer-top {
+  top: 0px;
+}
+
+.layer-middle {
+  top: 13.2px;
+}
+
+.layer-bottom {
+  top: 26.4px;
+}
+
+.icing {
+  top: 0.8px;
+  left: 2px;
+  background-color: #f0e4d0;
+  width: 96px;
+  height: 36px;
+  border-radius: 50%;
+}
+.icing:before {
+  content: "";
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  bottom: 6px;
+  left: 5px;
+  background-color: #f4ebdc;
+  box-shadow: 0 0 4px #f6efe3, 0 0 4px #f6efe3, 0 0 4px #f6efe3;
+  border-radius: 50%;
+  /* z-index: 1; */
+}
+
+.drip {
+  display: block;
+  width: 20px;
+  height: 24px;
+  border-bottom-left-radius: 25px;
+  border-bottom-right-radius: 25px;
+  background-color: #f0e4d0;
+}
+
+.drip1 {
+  top: 22px;
+  left: 2px;
+  transform: skewY(15deg);
+  height: 19.2px;
+  width: 16px;
+}
+
+.drip2 {
+  top: 30px;
+  left: 72.4px;
+  transform: skewY(-15deg);
+}
+
+.drip3 {
+  top: 33.6px;
+  left: 36px;
+  width: 32px;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+}
+
+.candle {
+  background-color: #bf737d;
+  width: 6.4px;
+  height: 20px;
+  border-radius: 8px/4px;
+  top: -8px;
+  left: 50%;
+  margin-left: -3.2px;
+  /* z-index: 10; */
+}
+.candle:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 6.4px;
+  height: 3.2px;
+  border-radius: 50%;
+  background-color: #cf969e;
+}
+
+.flame {
+  position: absolute;
+  background-color: orange;
+  width: 6px;
+  height: 13px;
+  border-radius: 10px 10px 10px 10px/25px 25px 10px 10px;
+  top: -13.6px;
+  left: 50%;
+  margin-left: -3px;
+  /* z-index: 10; */
+  box-shadow: 0 0 10px rgba(255, 165, 0, 0.5), 0 0 20px rgba(255, 165, 0, 0.5), 0 0 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 165, 0, 0.5);
+  transform-origin: 50% 90%;
+  animation: flicker 1s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0% {
+    /* transform: rotateZ(5deg); */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.2), 0 0 20px rgba(255, 165, 0, 0.2), 0 0 60px rgba(255, 165, 0, 0.2), 0 0 80px rgba(255, 165, 0, 0.2);
+  }
+  25% {
+    /* transform: rotateZ(-5deg); */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5), 0 0 20px rgba(255, 165, 0, 0.5), 0 0 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 165, 0, 0.5);
+  }
+  50% {
+    /* transform: rotateZ(10deg); */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.3), 0 0 20px rgba(255, 165, 0, 0.3), 0 0 60px rgba(255, 165, 0, 0.3), 0 0 80px rgba(255, 165, 0, 0.3);
+  }
+  75% {
+    /* transform: rotateZ(-10deg); */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.4), 0 0 20px rgba(255, 165, 0, 0.4), 0 0 60px rgba(255, 165, 0, 0.4), 0 0 80px rgba(255, 165, 0, 0.4);
+  }
+  100% {
+    /* transform: rotateZ(5deg); */
+    box-shadow: 0 0 10px rgba(255, 165, 0, 0.5), 0 0 20px rgba(255, 165, 0, 0.5), 0 0 60px rgba(255, 165, 0, 0.5), 0 0 80px rgba(255, 165, 0, 0.5);
+  }
+}
+
+#nextBtn {
+  position: fixed;
+  bottom: 30px; /* নিচ থেকে দূরত্ব */
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #0011ff, #e44dff);
+  color: white;
+  border: 2px solid #2d200a;
+  padding: 0.4rem 0.3rem; /* ছোট আকার */
+  border-radius: 10px;
+  font-size: 1rem;
+  font-family: "Manrope", sans-serif;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.6);
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+#nextBtn:hover {
+  transform: translateX(-50%) scale(1.07);
+  box-shadow: 0 0 20px rgba(204, 255, 0, 0.9);
+}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+  <div class="back"></div>
+  <div class="front">
+    <div class="cover-shape-large">
+      <div class="shape-diamond"></div>
+      <div class="shape-block"></div>
+    </div>
+    <div class="cover-shape-small">
+      <div class="shape-diamond"></div>
+      <div class="shape-block">
+        <div class="cake">
+          <div class="layer layer-bottom"></div>
+          <div class="layer layer-middle"></div>
+          <div class="layer layer-top"></div>
+          <div class="icing"></div>
+          <div class="drip drip1"></div>
+          <div class="drip drip2"></div>
+          <div class="drip drip3"></div>
+          <div class="candle">
+            <div class="flame"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="text-container">
+
+  <style>
+    @keyframes glow {
+      0% { color: #ff0000; text-shadow: 0 0 5px #e4ffde, 0 0 2px #000000; }
+      50% { color: #ff0000; text-shadow: 0 0 6px #e4ffde, 0 0 2px #000000; }
+      100% { color: #ff0000; text-shadow: 0 0 5px #e4ffde, 0 0 2px #000000; }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .asmi {
+      animation: glow 2s infinite alternate;
+      font-weight: bold;
+    }
+    .debabrata {
+      font-style: italic;
+      font-weight: bold;
+      
+      animation: glow 2s infinite alternate;
+    }
+    /* ✅ নতুন কিছু যোগ করা হলো */
+    .text-container {
+      width: 88%;
+      height: 90%;
+      margin: auto;
+      overflow-y: auto;
+      padding: 10px;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: #ebe410 transparent;
+    }
+    .text-container::-webkit-scrollbar {
+      width: 6px;
+    }
+    .text-container::-webkit-scrollbar-thumb {
+      background: #ffaad6;
+      border-radius: 10px;
+    }
+  </style>
+
+ <p id="head" style="font-size: 90%; font-weight: 600; text-align: center; margin: 20px 0;">
+  🎂💐 Happy Birthday Dear Soumi 🎂💐
+</p>
+
+  
+
+
+ <p>
+আজকের দিনটা শুধু ক্যালেন্ডারের একটা তারিখ নয় —
+আজকের দিনটা আমার কাছে একটু অন্যরকম। 🌷
+
+কারণ এই দিনেই পৃথিবী পেয়েছিল এমন একজন মানুষকে,
+যার হাসি খুব সহজেই একটা খারাপ দিনকে ভালো করে দিতে পারে,
+যার যত্ন নেওয়ার স্বভাবটা নিঃশব্দ অথচ ভীষণ গভীর,
+আর যার চোখের মধ্যে এমন কিছু আছে —
+যার দিকে তাকালে অনেক না-বলা কথাও যেন বলা হয়ে যায়। ✨
+
+শুভ জন্মদিন, Soumi। 🎂🌸
+
+Facebook-এর সেই একদম সাধারণ পরিচয়টা
+কীভাবে এতটা আপন হয়ে গেল,
+সেটা হয়তো আমিও ঠিক করে বলতে পারব না।
+কিছু মানুষ জীবনে খুব স্বাভাবিকভাবেই আসে,
+কিন্তু কখন যে তারা আমাদের দিনের একটা গুরুত্বপূর্ণ অংশ হয়ে যায়,
+সেটা আমরা নিজেরাও টের পাই না। 🌙
+</p>
+
+<p>
+তুমি এখন জীবনের এমন একটা সময়ের মধ্যে দিয়ে যাচ্ছো,
+যেখানে সামনে পরীক্ষা, পড়াশোনা,
+চাপ, দুশ্চিন্তা আর নিজের ভবিষ্যৎ নিয়ে হাজারটা ভাবনা। 📖
+
+হয়তো সব দিন সমান সহজ যাবে না।
+কখনও নিজের উপর সন্দেহ হবে,
+কখনও মনে হবে অনেক কিছু একসাথে ভারী হয়ে যাচ্ছে,
+কখনও হয়তো চুপ করে থাকতে ইচ্ছে করবে।
+
+সেই দিনগুলোর জন্য শুধু একটা কথা মনে রেখো —
+তোমাকে সবকিছু একা সামলাতে হবে না। 🫂
+
+যখন খুব ক্লান্ত লাগবে,
+যখন মনে হবে কেউ বুঝছে না,
+যখন নিজের ভেতরের কথাগুলো কাউকে বলতে ইচ্ছে করবে না —
+তখনও জেনে রেখো,
+আমি পাশে থাকব।
+
+হয়তো সব সমস্যার সমাধান আমার কাছে থাকবে না,
+হয়তো তোমার সব কষ্ট আমি নিজের হাতে সরিয়ে দিতে পারব না,
+কিন্তু তোমার পাশে চুপ করে দাঁড়িয়ে থাকার মতো একজন মানুষ
+হয়ে থাকতে চাই। ❤️
+</p>
+
+<p>
+তোমার হাসিটা যেন কখনও হারিয়ে না যায়। 🌸
+
+কারণ সত্যি বলতে,
+তোমার হাসির মধ্যে এমন একটা অদ্ভুত শান্তি আছে —
+যেটা হয়তো তুমি নিজেই জানো না।
+
+তোমার caring nature,
+মানুষের প্রতি তোমার সেই নরম মন,
+আর তোমার চোখের সেই অদ্ভুত শান্ত গভীরতা —
+এই ছোট ছোট জিনিসগুলোই হয়তো
+তোমাকে আমার কাছে একটু একটু করে
+অন্যরকম করে তুলেছে। ✨
+
+কিছু অনুভূতির কোনো নির্দিষ্ট দিন নেই,
+কোনো ঘোষণা নেই,
+কোনো নামও হয়তো নেই।
+
+তারা শুধু ধীরে ধীরে জন্ম নেয় —
+কথার ফাঁকে,
+অকারণ অপেক্ষায়,
+হঠাৎ মনে পড়ে যাওয়ায়,
+আর কারও হাসি নিজের অজান্তেই
+মনে থেকে যাওয়ায়। 🌙💗
+
+হয়তো কিছু কথা আজও বলা হয়ে ওঠেনি।
+হয়তো কিছু অনুভূতি এখনও শব্দ খুঁজছে।
+তবুও আজ তোমার জন্মদিনে
+শুধু এটুকু জানাতে ইচ্ছে করল —
+তুমি আমার কাছে সত্যিই খুব special। ❤️
+</p>
+
+<p>
+তোমার সামনে যে পথটা আসছে,
+সেটা যেন যতই কঠিন হোক,
+তুমি যেন নিজের উপর বিশ্বাস হারিয়ে না ফেলো। 🌿
+
+পরীক্ষার চাপ আসবে,
+কঠিন দিন আসবে,
+কিছু রাত হয়তো খুব দীর্ঘ মনে হবে —
+কিন্তু মনে রেখো,
+রাত যত দীর্ঘই হোক,
+সকালের আলো একদিন ঠিক আসে। ☀️
+
+তুমি ধীরে এগোও,
+নিজের মতো এগোও,
+শুধু থেমে যেও না।
+
+আর যদি কখনও পথটা খুব কঠিন লাগে,
+একবার পিছনে তাকিয়ো —
+হয়তো দেখবে,
+কেউ একজন এখনও তোমার পাশে হাঁটছে। 🫂✨
+</p>
+
+<p>
+আমি জানি না আগামী দিনগুলো আমাদের কোথায় নিয়ে যাবে।
+জানি না আজকের এই কথাগুলো
+কোনো একদিন তোমার কাছে কতটা অর্থ রাখবে।
+
+শুধু চাই,
+তোমার জীবনে যতটা আলো তুমি অন্যদের অজান্তে ছড়িয়ে দাও,
+তার চেয়েও অনেক বেশি আলো
+তোমার নিজের জীবনে ফিরে আসুক। 🌌✨
+
+তোমার চোখে স্বপ্ন থাকুক,
+মুখে সেই চেনা হাসিটা থাকুক,
+মনে শান্তি থাকুক,
+আর পাশে থাকুক এমন মানুষগুলো
+যারা তোমাকে সত্যি করে মূল্য দেয়। 🌷
+
+আর হ্যাঁ —
+কখনও যদি মনে হয় পৃথিবীটা একটু বেশি কঠিন হয়ে গেছে,
+তখন মনে রেখো,
+এই পৃথিবীর কোথাও একজন মানুষ আছে
+যে তোমার ভালো থাকাটাকে
+নিঃশব্দে খুব গুরুত্ব দিয়ে দেখে। ❤️
+</p>
+
+<p>
+আজ শুধু তোমার জন্য একটা ছোট্ট প্রার্থনা —
+
+তোমার প্রতিটা ভয় সাহসে বদলে যাক,
+প্রতিটা কান্না একদিন হাসিতে ফিরে আসুক,
+প্রতিটা কঠিন রাতের শেষে
+একটা সুন্দর সকাল অপেক্ষা করুক। 🌙🌸
+
+আর তোমার জীবনের গল্পটা
+এমন সুন্দর হোক,
+যাতে একদিন পিছনে ফিরে তাকিয়ে
+তুমি নিজেই বলো —
+
+“হ্যাঁ,
+সবকিছুর পরেও আমি পেরেছি।” ✨
+</p>
+
+<p>
+শুভ জন্মদিন, Soumi। 🎂❤️
+
+আজকের দিনটা তোমার।
+তাই আজ নিজের জন্য একটু বেশি হাসো,
+একটু বেশি খুশি হও,
+আর নিজের প্রতি একটু বেশি মায়া রেখো।
+
+কারণ তুমি সেটা deserve করো। 🌷
+
+আর হয়তো...
+আমার না-বলা কথাগুলোর মধ্যে
+সবচেয়ে সত্যি কথাটা শুধু এইটুকুই —
+
+তোমার ভালো থাকাটা
+আমার কাছে যতটা গুরুত্বপূর্ণ,
+সেটা হয়তো কোনো সুন্দর শব্দ দিয়েও
+পুরোপুরি বোঝানো সম্ভব নয়। ❤️
+</p>
+
+<p class="debabrata">
+— Debabrata ✨
+</p>
+</div>
+<div>
+
+</div>
+
+<button id="nextBtn" onclick="window.location.href='aimodel.html'">Next</button>
+
+<!-- 🎵 Background Music -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="audio/song1.mpeg" type="audio/mpeg">
+  </audio>
+
+  <!-- 🎵 Play music when card is opened/clicked -->
+  <script>
+    const music = document.getElementById("bgMusic");
+    const card = document.querySelector(".card");
+
+    card.addEventListener("click", async function () {
+      try {
+        music.volume = 1;
+        await music.play();
+      } catch (error) {
+        console.log("Music play failed:", error);
+      }
+    });
+  </script>
+</body>
+</html>

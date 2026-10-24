@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#050508" />
+  <title>A Gift · For You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+      --crimson: #dc143c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      background: #050508;
+      font-family: Inter, system-ui, sans-serif;
+      color: #f5f0ea;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    /* Galaxy photo — full bleed, mobile-safe crop */
+    .galaxy {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background: #050508 center center / cover no-repeat;
+      /* Keep galaxy core near visual center on phones */
+      background-image: url("img/september.jpg");
+      background-size: cover;
+      background-position: 50% 42%;
+      transform: scale(1.05);
+    }
+
+    /* Soft vignette so text/button stay readable */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 55% at 50% 40%, transparent 0%, rgba(5, 5, 8, 0.35) 55%, rgba(5, 5, 8, 0.82) 100%),
+        linear-gradient(to top, rgba(5, 5, 8, 0.9) 0%, transparent 28%),
+        linear-gradient(to bottom, rgba(5, 5, 8, 0.45) 0%, transparent 18%);
+    }
+
+    #fx {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .ui {
+      position: relative;
+      z-index: 5;
+      height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      padding:
+        calc(12px + var(--safe-t))
+        20px
+        calc(20px + var(--safe-b));
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .ui * { pointer-events: auto; }
+
+    /* Text lives on canvas; this is fallback / accessibility */
+    .hb-fallback {
+      position: absolute;
+      left: 50%;
+      top: 38%;
+      transform: translate(-50%, -50%);
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(1.8rem, 8vw, 2.8rem);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(255, 220, 220, 0.08);
+      white-space: nowrap;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .caption {
+      font-family: "Cormorant Garamond", serif;
+      font-size: clamp(0.95rem, 3.5vw, 1.15rem);
+      font-style: italic;
+      color: rgba(245, 240, 234, 0.7);
+      margin-bottom: 1.25rem;
+      max-width: 280px;
+      line-height: 1.45;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 1.2s ease, transform 1.2s ease;
+    }
+
+    .caption.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .end-btn {
+      appearance: none;
+      border: 1px solid rgba(220, 20, 60, 0.45);
+      background: rgba(220, 20, 60, 0.15);
+      color: #f5f0ea;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      padding: 0.95rem 2.4rem;
+      border-radius: 999px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.9s ease, transform 0.9s ease, background 0.25s, border-color 0.25s;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .end-btn.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .end-btn:active {
+      transform: scale(0.97);
+      background: rgba(220, 20, 60, 0.28);
+      border-color: rgba(220, 20, 60, 0.7);
+    }
+
+    /* Unlock for autoplay */
+    .unlock {
+      position: fixed;
+      inset: 0;
+      z-index: 30;
+      background: rgba(5, 5, 8, 0.92);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 24px;
+      text-align: center;
+      transition: opacity 0.5s ease, visibility 0.5s;
+    }
+
+    .unlock.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .unlock h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.4rem;
+      font-weight: 500;
+    }
+
+    .unlock p {
+      font-size: 0.85rem;
+      color: rgba(245, 240, 234, 0.55);
+      max-width: 240px;
+    }
+
+    .unlock-btn {
+      margin-top: 8px;
+      border: 1px solid rgba(220, 20, 60, 0.5);
+      background: rgba(220, 20, 60, 0.2);
+      color: #f5f0ea;
+      font-size: 0.8rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 12px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="galaxy" role="img" aria-label="Galaxy from NASA"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <canvas id="fx" aria-hidden="true"></canvas>
+
+  <div class="unlock" id="unlock">
+    <div style="font-size:1.8rem">🌌</div>
+    <h2>A Mythical Gift, Just for You</h2>
+<p>Tap to open the sky ✨</p>
+    <button type="button" class="unlock-btn" id="unlockBtn">Open</button>
+  </div>
+
+  <div class="ui">
+  <p class="hb-fallback" aria-hidden="true">Happy Birthday</p>
+
+  <p class="caption" id="caption">
+    16 September — the day you were born,
+    and somewhere in the vastness of space,
+    the universe had its own way of creating something beautiful. ✨
+    <br><br>
+    Maybe the stars knew that day
+    they were welcoming someone truly special. ❤️
+  </p>
+
+  <button type="button" class="end-btn" id="endBtn">Next</button>
+</div>
+
+  <!-- Change path if needed -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="audio/song3.1.mpeg" type="audio/mpeg" />
+  </audio>
+
+
+  <script>
+(function () {
+  "use strict";
+
+  const canvas = document.getElementById("fx");
+  const ctx = canvas.getContext("2d", { alpha: true });
+  const caption = document.getElementById("caption");
+  const endBtn = document.getElementById("endBtn");
+  const music = document.getElementById("bgMusic");
+  const unlock = document.getElementById("unlock");
+  const unlockBtn = document.getElementById("unlockBtn");
+
+  if (!canvas || !ctx) return;
+
+  let W = 0, H = 0, dpr = 1;
+  let particles = [];
+  let stars = [];
+  let targets = [];
+  let formed = false;
+  let started = false;
+  let startTime = 0;
+  let animId = 0;
+  let textMeta = { cx: 0, cy: 0, tw: 0, th: 0, fontSize: 40 };
+
+  function resize() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.floor(W * dpr);
+    canvas.height = Math.floor(H * dpr);
+    canvas.style.width = W + "px";
+    canvas.style.height = H + "px";
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function buildTargets() {
+    targets = [];
+    const isMobile = W < 600;
+
+    let fontSize = isMobile
+      ? Math.min(W * 0.11, 46)
+      : Math.min(W * 0.08, 76);
+    fontSize = Math.max(fontSize, 32);
+
+    const textWidth = Math.max(360, W);
+    const textHeight = Math.ceil(fontSize * 2.6);
+    const textCanvas = document.createElement("canvas");
+    textCanvas.width = textWidth;
+    textCanvas.height = textHeight;
+    const tctx = textCanvas.getContext("2d", { willReadFrequently: true });
+
+    tctx.clearRect(0, 0, textWidth, textHeight);
+    tctx.font = "700 " + fontSize + "px Georgia, 'Times New Roman', serif";
+    tctx.textAlign = "center";
+    tctx.textBaseline = "middle";
+
+    // Thick stroke = denser, clearer letter shapes
+    tctx.lineWidth = Math.max(3, fontSize * 0.06);
+    tctx.strokeStyle = "#ffffff";
+    tctx.fillStyle = "#ffffff";
+    tctx.strokeText("Happy Birthday", textWidth / 2, textHeight / 2);
+    tctx.fillText("Happy Birthday", textWidth / 2, textHeight / 2);
+
+    try {
+      if (document.fonts && document.fonts.check("700 " + fontSize + "px 'Cormorant Garamond'")) {
+        tctx.clearRect(0, 0, textWidth, textHeight);
+        tctx.font = "700 " + fontSize + "px 'Cormorant Garamond', Georgia, serif";
+        tctx.lineWidth = Math.max(3, fontSize * 0.06);
+        tctx.strokeStyle = "#ffffff";
+        tctx.fillStyle = "#ffffff";
+        tctx.textAlign = "center";
+        tctx.textBaseline = "middle";
+        tctx.strokeText("Happy Birthday", textWidth / 2, textHeight / 2);
+        tctx.fillText("Happy Birthday", textWidth / 2, textHeight / 2);
+      }
+    } catch (e) {}
+
+    const data = tctx.getImageData(0, 0, textWidth, textHeight).data;
+    const gap = isMobile ? 2 : 2;
+    const textCenterY = H * (isMobile ? 0.34 : 0.36);
+    const offsetX = (W - textWidth) / 2;
+
+    for (let y = 0; y < textHeight; y += gap) {
+      for (let x = 0; x < textWidth; x += gap) {
+        if (data[(y * textWidth + x) * 4 + 3] > 90) {
+          targets.push({
+            x: offsetX + x,
+            y: textCenterY - textHeight / 2 + y
+          });
+        }
+      }
+    }
+
+    textMeta = {
+      cx: W / 2,
+      cy: textCenterY,
+      tw: Math.min(W * 0.92, fontSize * 12),
+      th: fontSize * 2.2,
+      fontSize: fontSize
+    };
+
+    if (targets.length < 40) {
+      const s = "HAPPY BIRTHDAY";
+      const spacing = isMobile ? 16 : 22;
+      const total = s.length * spacing;
+      const sx = W / 2 - total / 2;
+      for (let i = 0; i < s.length; i++) {
+        if (s[i] === " ") continue;
+        for (let j = 0; j < 18; j++) {
+          targets.push({
+            x: sx + i * spacing + (Math.random() - 0.5) * 6,
+            y: textCenterY + (Math.random() - 0.5) * 16
+          });
+        }
+      }
+    }
+  }
+
+  function scatterParticles() {
+    particles = [];
+    if (!targets.length) return;
+
+    const maxCount = W < 600 ? 700 : 1000;
+    const count = Math.min(targets.length, maxCount);
+    const indexes = targets.map((_, i) => i);
+    for (let i = indexes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = indexes[i];
+      indexes[i] = indexes[j];
+      indexes[j] = tmp;
+    }
+
+    for (let i = 0; i < count; i++) {
+      const target = targets[indexes[i % targets.length]];
+      particles.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        tx: target.x,
+        ty: target.y,
+        r: 1.35 + Math.random() * 1.4,
+        a: 0.9 + Math.random() * 0.1,
+        delay: Math.random() * 1.2,
+        settled: false
+      });
+    }
+  }
+
+  function spawnStar() {
+    const fromLeft = Math.random() > 0.5;
+    stars.push({
+      x: fromLeft ? -40 : W + 40,
+      y: Math.random() * H * 0.5,
+      vx: fromLeft ? 3.5 + Math.random() * 3 : -(3.5 + Math.random() * 3),
+      vy: 0.9 + Math.random() * 2,
+      life: 1,
+      len: 32 + Math.random() * 50
+    });
+  }
+
+  // Dark plate behind text for contrast on bright galaxy core
+  function drawTextBackdrop(progress) {
+    const a = Math.min(1, progress) * 0.72;
+    if (a <= 0.02) return;
+    const { cx, cy, tw, th } = textMeta;
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, tw * 0.55);
+    g.addColorStop(0, "rgba(0, 0, 0, " + a + ")");
+    g.addColorStop(0.55, "rgba(0, 0, 0, " + (a * 0.55) + ")");
+    g.addColorStop(1, "rgba(0, 0, 0, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, tw * 0.55, th * 0.85, 0, 0, Math.PI * 2);
+    ctx.fill();
+  }
+
+  // Crisp readable text fades in on top of particles
+  function drawReadableText(progress) {
+    const a = Math.max(0, Math.min(1, (progress - 0.55) / 0.45));
+    if (a <= 0.01) return;
+
+    const { cx, cy, fontSize } = textMeta;
+    ctx.save();
+    ctx.font = "700 " + fontSize + "px Georgia, 'Cormorant Garamond', serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Soft crimson halo
+    ctx.shadowColor = "rgba(255, 40, 70, " + (0.65 * a) + ")";
+    ctx.shadowBlur = 18;
+    ctx.fillStyle = "rgba(255, 235, 238, " + a + ")";
+    ctx.fillText("Happy Birthday", cx, cy);
+
+    // Second pass for extra clarity
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = "rgba(255, 250, 250, " + (a * 0.95) + ")";
+    ctx.fillText("Happy Birthday", cx, cy);
+    ctx.restore();
+  }
+
+  function drawParticle(p, glowScale) {
+    const glowRadius = p.r * (4.2 * glowScale);
+    const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, glowRadius);
+    gradient.addColorStop(0, "rgba(255, 120, 140, " + p.a + ")");
+    gradient.addColorStop(0.3, "rgba(220, 20, 60, " + (p.a * 0.7) + ")");
+    gradient.addColorStop(1, "rgba(220, 20, 60, 0)");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, glowRadius, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 245, 247, " + p.a + ")";
+    ctx.fill();
+  }
+
+  function frame(now) {
+    if (!startTime) startTime = now;
+    const elapsed = (now - startTime) / 1000;
+
+    ctx.clearRect(0, 0, W, H);
+
+    const assemble = elapsed > 1;
+    // 0 → 1 as particles settle
+    let settleProgress = 0;
+    if (assemble) {
+      settleProgress = Math.min(1, (elapsed - 0.9) / 7.2);
+    }
+
+    drawTextBackdrop(settleProgress);
+
+    for (let i = 0; i < particles.length; i++) {
+      const p = particles[i];
+
+      if (assemble && elapsed > p.delay + 0.7) {
+        const dx = p.tx - p.x;
+        const dy = p.ty - p.y;
+        p.x += dx * 0.04;
+        p.y += dy * 0.04;
+        if (Math.abs(dx) < 0.6 && Math.abs(dy) < 0.6) {
+          p.x = p.tx;
+          p.y = p.ty;
+          p.settled = true;
+        }
+      } else {
+        p.x += Math.sin(elapsed * 0.8 + i) * 0.1;
+        p.y += Math.cos(elapsed * 0.7 + i * 0.3) * 0.08;
+      }
+
+      drawParticle(p, 1);
+    }
+
+    // Crisp text over particles for real readability
+    drawReadableText(settleProgress);
+
+    if (assemble && elapsed > 4 && !formed) {
+      formed = true;
+      if (caption) caption.classList.add("show");
+      setTimeout(function () {
+        if (endBtn) endBtn.classList.add("show");
+      }, 1000);
+    }
+
+    if (Math.random() < 0.008) spawnStar();
+    for (let i = stars.length - 1; i >= 0; i--) {
+      const star = stars[i];
+      star.x += star.vx;
+      star.y += star.vy;
+      star.life -= 0.01;
+      const angle = Math.atan2(star.vy, star.vx);
+      const x2 = star.x - Math.cos(angle) * star.len;
+      const y2 = star.y - Math.sin(angle) * star.len;
+      const grad = ctx.createLinearGradient(star.x, star.y, x2, y2);
+      grad.addColorStop(0, "rgba(255,255,255," + star.life + ")");
+      grad.addColorStop(0.4, "rgba(255,180,190," + star.life * 0.5 + ")");
+      grad.addColorStop(1, "rgba(220,20,60,0)");
+      ctx.beginPath();
+      ctx.moveTo(star.x, star.y);
+      ctx.lineTo(x2, y2);
+      ctx.strokeStyle = grad;
+      ctx.lineWidth = 1.4;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(star.x, star.y, 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(255,255,255," + star.life + ")";
+      ctx.fill();
+      if (star.life <= 0 || star.x < -150 || star.x > W + 150) stars.splice(i, 1);
+    }
+
+    animId = requestAnimationFrame(frame);
+  }
+
+  function bootScene() {
+    resize();
+    buildTargets();
+    scatterParticles();
+    if (particles.length < 20) {
+      setTimeout(function () {
+        buildTargets();
+        scatterParticles();
+      }, 150);
+    }
+  }
+
+  async function startMusic() {
+    if (!music) return;
+    try {
+      music.volume = 1;
+      await music.play();
+    } catch (e) {}
+  }
+
+  function startExperience() {
+    if (started) return;
+    started = true;
+    if (unlock) unlock.classList.add("hide");
+    startMusic();
+    bootScene();
+    formed = false;
+    startTime = 0;
+    cancelAnimationFrame(animId);
+    animId = requestAnimationFrame(frame);
+  }
+
+  if (unlockBtn) unlockBtn.addEventListener("click", startExperience);
+  if (endBtn) {
+    endBtn.addEventListener("click", function () {
+      window.location.href = "final.html";
+    });
+  }
+
+  let resizeTimer = null;
+  window.addEventListener(
+    "resize",
+    function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () {
+        resize();
+        buildTargets();
+        if (formed) {
+          particles.forEach(function (p, i) {
+            const target = targets[i % targets.length];
+            if (target) {
+              p.tx = target.x;
+              p.ty = target.y;
+              p.x = target.x;
+              p.y = target.y;
+            }
+          });
+        } else if (started) {
+          scatterParticles();
+        }
+      }, 120);
+    },
+    { passive: true }
+  );
+
+  resize();
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(buildTargets);
+  } else {
+    buildTargets();
+  }
+})();
+</script>
+</body>
+</html>

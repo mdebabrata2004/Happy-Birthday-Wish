@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#12141a" />
+  <title>Soumi AI · For Soumi</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #12141a;
+      --panel: rgba(28, 32, 42, 0.85);
+      --accent: #a78bfa;
+      --soft: #c4b5fd;
+      --pink: #f0a8c0;
+      --cream: #f4f2f7;
+      --muted: #9ca3af;
+      --bubble-me: rgba(99, 102, 241, 0.28);
+      --bubble-ai: rgba(255, 255, 255, 0.07);
+      --safe-b: env(safe-area-inset-bottom, 0px);
+      --safe-t: env(safe-area-inset-top, 0px);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+      font-family: Inter, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--cream);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    #bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .app {
+      position: relative;
+      z-index: 2;
+      height: 100dvh;
+      max-width: 440px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      padding-top: var(--safe-t);
+    }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      gap: 8px;
+      background: rgba(18, 20, 26, 0.75);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #6366f1, #a78bfa);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .brand-text h1 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.1rem;
+      font-weight: 500;
+      line-height: 1.2;
+    }
+
+    .brand-text p {
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid rgba(167, 139, 250, 0.3);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--cream);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn.muted { opacity: 0.45; }
+
+    .next-btn {
+      appearance: none;
+      border: 1px solid rgba(167, 139, 250, 0.4);
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--cream);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 0.5rem 0.85rem;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .next-btn:active { transform: scale(0.96); }
+
+    /* Chat */
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 14px 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth;
+    }
+
+    .msg {
+      max-width: 82%;
+      padding: 10px 13px;
+      border-radius: 16px;
+      line-height: 1.45;
+      font-size: 0.95rem;
+      animation: msg-in 0.3s ease both;
+      word-break: break-word;
+    }
+
+    .msg.me {
+      align-self: flex-end;
+      background: var(--bubble-me);
+      border-bottom-right-radius: 5px;
+      border: 1px solid rgba(129, 140, 248, 0.25);
+    }
+
+    .msg.ai {
+      align-self: flex-start;
+      background: var(--bubble-ai);
+      border-bottom-left-radius: 5px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      font-size: 1.2rem;
+      letter-spacing: 0.03em;
+    }
+
+    .msg.ai .label {
+      display: block;
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--soft);
+      margin-bottom: 4px;
+      font-family: Inter, sans-serif;
+      opacity: 0.85;
+    }
+
+    .typing {
+      align-self: flex-start;
+      padding: 11px 14px;
+      background: var(--bubble-ai);
+      border-radius: 16px;
+      border-bottom-left-radius: 5px;
+      display: none;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .typing.show { display: flex; }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.15s; }
+    .typing span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: translateY(0); opacity: 0.35; }
+      40% { transform: translateY(-4px); opacity: 1; }
+    }
+
+    @keyframes msg-in {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .quick {
+      display: flex;
+      gap: 6px;
+      padding: 4px 12px 8px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .quick::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex-shrink: 0;
+      border: 1px solid rgba(167, 139, 250, 0.25);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--cream);
+      font-size: 0.75rem;
+      padding: 6px 11px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .chip:active { background: rgba(99, 102, 241, 0.2); }
+
+    /* Composer */
+    .composer {
+      padding: 8px 12px calc(10px + var(--safe-b));
+      background: rgba(18, 20, 26, 0.9);
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .composer-inner {
+      display: flex;
+      align-items: flex-end;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(167, 139, 250, 0.22);
+      border-radius: 20px;
+      padding: 5px 5px 5px 12px;
+    }
+
+    #input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      color: var(--cream);
+      font-size: 16px;
+      font-family: inherit;
+      resize: none;
+      max-height: 90px;
+      min-height: 22px;
+      line-height: 1.4;
+      outline: none;
+      padding: 6px 0;
+    }
+
+    #input::placeholder { color: var(--muted); }
+
+    #send {
+      width: 38px;
+      height: 38px;
+      border: none;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #send:active { transform: scale(0.93); }
+
+    /* Tap to unlock music overlay */
+    .unlock {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(12, 14, 20, 0.88);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      padding: 24px;
+      text-align: center;
+      transition: opacity 0.45s ease, visibility 0.45s;
+    }
+
+    .unlock.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .unlock h2 {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 1.5rem;
+      font-weight: 500;
+    }
+
+    .unlock p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 260px;
+    }
+
+    .unlock-btn {
+      margin-top: 8px;
+      border: 1px solid rgba(167, 139, 250, 0.45);
+      background: rgba(99, 102, 241, 0.25);
+      color: var(--cream);
+      font-size: 0.85rem;
+      padding: 12px 28px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+
+  <!-- First tap unlocks autoplay -->
+<div class="unlock" id="unlock">
+
+  <div class="unlock-icon">✨</div>
+
+  <h2>A Little Surprise for Soumi</h2>
+
+  <p>
+    Tap to enter — turn up the sound and let the magic begin 💫
+  </p>
+
+  <button
+    type="button"
+    class="unlock-btn"
+    id="unlockBtn"
+  >
+    Enter ✨
+  </button>
+
+</div>
+
+
+<div class="app">
+
+  <!-- Top Bar -->
+  <div class="topbar">
+
+    <div class="brand">
+
+      <div class="avatar">
+        🤍
+      </div>
+
+      <div class="brand-text">
+        <h1>For Soumi ✨</h1>
+        <p>a little corner of the universe</p>
+      </div>
+
+    </div>
+
+
+    <div class="top-actions">
+
+      <button
+        type="button"
+        class="icon-btn"
+        id="musicBtn"
+        aria-label="Toggle music"
+        title="Music"
+      >
+        ♪
+      </button>
+
+      <button
+        type="button"
+        class="next-btn"
+        id="nextBtn"
+      >
+        Next →
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <!-- Chat -->
+  <div
+    class="chat"
+    id="chat"
+    aria-live="polite"
+  >
+
+    <div class="msg ai">
+
+      <span class="label">
+        ✨ A Little Message
+      </span>
+
+      👋💫<br />
+
+      Hey Soumi —
+      আজ তোমার জন্য একটা ছোট্ট
+      magical surprise আছে। 🌌❤️
+
+      <br /><br />
+
+      যা মনে আসে লিখে বলো...
+      আমি শুনছি। 🫶
+
+    </div>
+
+  </div>
+
+
+  <!-- Typing animation -->
+  <div
+    class="typing"
+    id="typing"
+    aria-hidden="true"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+
+
+  <!-- Quick replies -->
+  <div
+    class="quick"
+    id="quick"
+    aria-label="Quick messages"
+  >
+
+    <button
+      type="button"
+      class="chip"
+      data-text="hi"
+    >
+      Hi 👋
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      data-text="how are you"
+    >
+      How are you? 💕
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      data-text="i'm bored"
+    >
+      I'm bored 🥺
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      data-text="tell me a joke"
+    >
+      Tell me a joke 😂
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      data-text="good night"
+    >
+      Good night 🌙
+    </button>
+
+    <button
+      type="button"
+      class="chip"
+      data-text="i miss you"
+    >
+      I miss you ❤️
+    </button>
+
+  </div>
+
+
+  <!-- Composer -->
+  <div class="composer">
+
+    <div class="composer-inner">
+
+      <textarea
+        id="input"
+        rows="1"
+        placeholder="Tell me something… 💬"
+        enterkeyhint="send"
+        aria-label="Message"
+      ></textarea>
+
+      <button
+        type="button"
+        id="send"
+        aria-label="Send message"
+        title="Send"
+      >
+        ➤
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+  <audio id="bgMusic" loop preload="auto">
+    <source src="audio/song2.mpeg" type="audio/mpeg" />
+  </audio>
+
+  <script>
+    (function () {
+      "use strict";
+
+      // ── Background: mostly cool particles, ~30% soft hearts ──
+      const canvas = document.getElementById("bg-canvas");
+      const ctx = canvas.getContext("2d");
+      let W, H, particles = [];
+
+      function resize() {
+        W = canvas.width = innerWidth;
+        H = canvas.height = innerHeight;
+      }
+      resize();
+      addEventListener("resize", resize, { passive: true });
+
+      function makeP() {
+        const heart = Math.random() < 0.28; // ~30% hearts
+        return {
+          x: Math.random() * W,
+          y: Math.random() * H,
+          r: 0.6 + Math.random() * 1.8,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: -0.12 - Math.random() * 0.25,
+          a: 0.12 + Math.random() * 0.3,
+          heart,
+          size: 5 + Math.random() * 8
+        };
+      }
+
+      for (let i = 0; i < 32; i++) particles.push(makeP());
+
+      function drawHeart(x, y, s, a) {
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.scale(s / 16, s / 16);
+        ctx.beginPath();
+        ctx.moveTo(0, 3);
+        ctx.bezierCurveTo(-9, -5, -12, 6, 0, 14);
+        ctx.bezierCurveTo(12, 6, 9, -5, 0, 3);
+        ctx.fillStyle = `rgba(240, 168, 192, ${a * 0.55})`;
+        ctx.fill();
+        ctx.restore();
+      }
+
+      function loop() {
+        ctx.clearRect(0, 0, W, H);
+        const g = ctx.createRadialGradient(W * 0.5, H * 0.2, 0, W * 0.5, H * 0.35, H * 0.65);
+        g.addColorStop(0, "rgba(70, 60, 120, 0.2)");
+        g.addColorStop(1, "rgba(18, 20, 26, 0)");
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, W, H);
+
+        for (const p of particles) {
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.y < -20) {
+            p.y = H + 15;
+            p.x = Math.random() * W;
+          }
+          if (p.heart) drawHeart(p.x, p.y, p.size, p.a);
+          else {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(180, 170, 255, ${p.a})`;
+            ctx.fill();
+          }
+        }
+        requestAnimationFrame(loop);
+      }
+      loop();
+
+      // ── Audio ──
+      const music = document.getElementById("bgMusic");
+      const musicBtn = document.getElementById("musicBtn");
+      let musicOn = false;
+
+      async function startMusic() {
+        try {
+          music.volume = 0.82;
+          await music.play();
+          musicOn = true;
+          musicBtn.classList.remove("muted");
+          musicBtn.textContent = "♪";
+        } catch (e) {
+          musicOn = false;
+          musicBtn.classList.add("muted");
+        }
+      }
+
+      async function toggleMusic() {
+        if (musicOn) {
+          music.pause();
+          musicOn = false;
+          musicBtn.classList.add("muted");
+          musicBtn.textContent = "🔇";
+        } else {
+          await startMusic();
+        }
+      }
+      musicBtn.addEventListener("click", toggleMusic);
+
+      // Unlock overlay → auto music
+      const unlock = document.getElementById("unlock");
+      document.getElementById("unlockBtn").addEventListener("click", async () => {
+        unlock.classList.add("hide");
+        await startMusic();
+      });
+
+      // ── Next ──
+      document.getElementById("nextBtn").addEventListener("click", () => {
+        window.location.href = "gift.html";
+      });
+
+      // ── Chat ──
+      const chat = document.getElementById("chat");
+      const input = document.getElementById("input");
+      const sendBtn = document.getElementById("send");
+      const typing = document.getElementById("typing");
+
+      function emojiReply(text) {
+        const t = (text || "").toLowerCase().trim();
+
+        const rules = [
+
+  /* =========================
+     LOVE / AFFECTION
+     ========================= */
+
+  {
+    keys: [
+      "love",
+      "ভালোবাসি",
+      "ভালবাসি",
+      "i love you",
+      "love you",
+      "luv you",
+      "লাভ ইউ"
+    ],
+    reply:
+      "😊✨\n I Love You too, Soumi Madam 🫣💗"
+  },
+
+  {
+    keys: [
+      "do you love me",
+      "তুমি কি আমাকে ভালোবাসো",
+      "আমাকে ভালোবাসো",
+      "তুমি আমাকে ভালোবাসো"
+    ],
+    reply:
+      "🥹💗\nএই প্রশ্নটা কিন্তু খুব মিষ্টি… উত্তরটা তুমি মনে মনে জানোই তো ✨"
+  },
+
+  {
+    keys: [
+      "love me",
+      "আমাকে ভালবাস",
+      "আমাকে ভালোবাস"
+    ],
+    reply:
+      "🙈💗\nআচ্ছা… একটু একটু করে ভালোবাসা দেওয়া যাক 🌸✨"
+  },
+
+  {
+    keys: [
+      "kiss",
+      "চুমু",
+      "kiss me"
+    ],
+    reply:
+      "🙈💋\nউফফ… chatbox-এ এত দুষ্টুমি কেন? 😌✨"
+  },
+
+  {
+    keys: [
+      "hug",
+      "জড়িয়ে ধর",
+      "জড়িয়ে ধর",
+      "জড়িয়ে ধরো",
+      "জড়িয়ে ধরো"
+    ],
+    reply:
+      "🫂💗\nএই নাও একটা বড় soft hug… কিছুক্ষণ এভাবেই থাকো ✨"
+  },
+
+  {
+    keys: [
+      "cute",
+      "সুন্দর",
+      "beautiful",
+      "pretty",
+      "gorgeous",
+      "মিষ্টি"
+    ],
+    reply:
+      "🙈✨\nএত compliment দিলে কিন্তু আমি লজ্জা পেয়ে যাব 😌💗"
+  },
+
+  {
+    keys: [
+      "miss",
+      "মিস",
+      "i miss you",
+      "miss you",
+      "মনে পড়ছে",
+      "মনে পড়ছে"
+    ],
+    reply:
+      "🥺🌙\nআচ্ছা… তাহলে এই নাও একটা warm hug 🫂✨ কাছে না থাকলেও একটু warmth থাকুক 💗"
+  },
+
+
+  /* =========================
+     GREETINGS
+     ========================= */
+
+  {
+    keys: [
+      "hi",
+      "hello",
+      "হ্যালো",
+      "হাই",
+      "hey",
+      "হেই",
+      "হ্যালোও"
+    ],
+    reply:
+      "👋✨\nহেই Soumi! কেমন আছো? আজকের mood কেমন? 💬🌸"
+  },
+
+  {
+    keys: [
+      "good morning",
+      "morning",
+      "শুভ সকাল",
+      "সুপ্রভাত",
+      "সকাল"
+    ],
+    reply:
+      "☀️🌼\nGood morning, Soumi! আজকের দিনটা তোমার জন্য একটু বেশি সুন্দর হোক ✨"
+  },
+
+  {
+    keys: [
+      "good afternoon",
+      "afternoon",
+      "শুভ দুপুর"
+    ],
+    reply:
+      "🌤️😊\nGood afternoon~ দুপুরটা শান্তিতে কাটছে তো? 🍵✨"
+  },
+
+  {
+    keys: [
+      "good evening",
+      "evening",
+      "শুভ সন্ধ্যা"
+    ],
+    reply:
+      "🌆✨\nGood evening, Soumi~ দিনটা কেমন গেল? 💗"
+  },
+
+  {
+    keys: [
+      "good night",
+      "night",
+      "শুভ রাত্রি",
+      "শুভ রাত",
+      "ঘুমাবো",
+      "sleep",
+      "ঘুম"
+    ],
+    reply:
+      "🌙😴\nGood night, Soumi 💤✨ আজকের সব চিন্তা একটু পাশে রেখে শান্তিতে ঘুমাও। 💗"
+  },
+
+
+  /* =========================
+     HOW ARE YOU
+     ========================= */
+
+  {
+    keys: [
+      "how are you",
+      "how r u",
+      "how are u",
+      "কেমন আছ",
+      "কেমন আছো",
+      "কেমন আছেন",
+      "কি খবর",
+      "কী খবর"
+    ],
+    reply:
+      "😌✨\nআমি তো ভালোই আছি — emoji-তে ভরা 😄💫 তুমি কেমন আছো?"
+  },
+
+  {
+    keys: [
+      "i am fine",
+      "i'm fine",
+      "im fine",
+      "আমি ভালো",
+      "আমি ভালো আছি",
+      "ভালো আছি",
+      "fine"
+    ],
+    reply:
+      "😊🌸\nএটা শুনেই ভালো লাগলো! এই ভালো mood-টা ধরে রাখো ✨💗"
+  },
+
+  {
+    keys: [
+      "not good",
+      "ভালো নেই",
+      "ভালো লাগছে না",
+      "মন ভালো নেই"
+    ],
+    reply:
+      "🫂💙\nসবসময় ভালো থাকা সম্ভব না… একটু সময় নাও। আমি এখানেই আছি ✨"
+  },
+
+
+  /* =========================
+     MOOD
+     ========================= */
+
+  {
+    keys: [
+      "sad",
+      "খারাপ",
+      "মন খারাপ",
+      "cry",
+      "কান্না",
+      "কাঁদছি",
+      "lonely",
+      "একাকী",
+      "একা লাগছে"
+    ],
+    reply:
+      "🫂💙\nএসো… একটু থামো। সবকিছু এখনই ঠিক করতে হবে না। ধীরে ধীরে শ্বাস নাও 😌✨"
+  },
+
+  {
+    keys: [
+      "happy",
+      "খুশি",
+      "yay",
+      "excited",
+      "আনন্দ",
+      "মজা লাগছে"
+    ],
+    reply:
+      "🥳🎉\nইয়েসস! তোমার mood ভালো দেখে আমারও ভালো লাগছে 😄✨ এই happinessটা ধরে রাখো! 💗"
+  },
+
+  {
+    keys: [
+      "angry",
+      "রাগ",
+      "রাগ করেছি",
+      "রেগে আছি",
+      "বিরক্ত লাগছে"
+    ],
+    reply:
+      "😮‍💨🧊\nআগে একটু শান্ত হও… পানি খাও, deep breath নাও। তারপর যা বলার বলো 😌✨"
+  },
+
+  {
+    keys: [
+      "bored",
+      "বিরক্ত",
+      "বোর লাগছে",
+      "কিছু ভালো লাগছে না"
+    ],
+    reply:
+      "🎲😎\nবোরিং? তাহলে আমাকে একটা random question করো! অথবা একটা game শুরু করি 🎮✨"
+  },
+
+  {
+    keys: [
+      "tired",
+      "ক্লান্ত",
+      "ক্লান্ত লাগছে",
+      "exhausted"
+    ],
+    reply:
+      "🥺☕\nতাহলে একটু rest নাও। সবকিছু একসাথে করার দরকার নেই 🫂✨"
+  },
+
+
+  /* =========================
+     COMPLIMENTS
+     ========================= */
+
+  {
+    keys: [
+      "you are cute",
+      "তুমি সুন্দর",
+      "তুমি কিউট",
+      "you are nice",
+      "তুমি ভালো"
+    ],
+    reply:
+      "🙈✨\nআহা… এত সুন্দর কথা বললে তো আমার emoji-গুলোও লজ্জা পাবে 🥹💗"
+  },
+
+  {
+    keys: [
+      "thank you",
+      "thanks",
+      "thank",
+      "ধন্যবাদ",
+      "থ্যাঙ্ক",
+      "থ্যাংকস"
+    ],
+    reply:
+      "😊🙌\nঅবশ্যই~ anytime, Soumi ✨💗"
+  },
+
+  {
+    keys: [
+      "welcome",
+      "you're welcome",
+      "no problem",
+      "সমস্যা নেই"
+    ],
+    reply:
+      "😊✨\nAlways welcome! 🌸"
+  },
+
+
+  /* =========================
+     JOKES / FUN
+     ========================= */
+
+  {
+    keys: [
+      "joke",
+      "জোক",
+      "মজা",
+      "মজার",
+      "জোক বল"
+    ],
+    reply:
+      "🤭😂\nকেন কম্পিউটার ঠান্ডা থাকে?\nকারণ তার একটা fan আছে! 🌀😎"
+  },
+
+  {
+    keys: [
+      "another joke",
+      "আরেকটা জোক",
+      "আরেকটা বল"
+    ],
+    reply:
+      "😂🍕\nPizza কেন কখনও একা থাকে না?\nকারণ তার সবসময় একটা slice থাকে! 😎🍕"
+  },
+
+  {
+    keys: [
+      "make me laugh",
+      "হাসাও",
+      "আমাকে হাসাও"
+    ],
+    reply:
+      "😂✨\nতুমি হাসলে কিন্তু আমার mission successful! 😎💗"
+  },
+
+
+  /* =========================
+     FOOD
+     ========================= */
+
+  {
+    keys: [
+      "hungry",
+      "খিদে",
+      "ক্ষুধা",
+      "খেতে ইচ্ছে করছে",
+      "খাবো",
+      "food",
+      "খাওয়া",
+      "খাওয়া"
+    ],
+    reply:
+      "🍕😋\nখিদে পেয়েছে? আগে কিছু খেয়ে নাও! Pizza 🍕, biryani 🍛 নাকি dessert 🍰?"
+  },
+
+  {
+    keys: [
+      "pizza",
+      "পিজ্জা"
+    ],
+    reply:
+      "🍕🤤\nPizza! Excellent choice. Extra cheese হবে? 🧀😌"
+  },
+
+  {
+    keys: [
+      "coffee",
+      "কফি",
+      "চা",
+      "tea"
+    ],
+    reply:
+      "☕😌\nএক কাপ গরম চা/কফি আর একটু শান্ত সময় — perfect combo ✨"
+  },
+
+
+  /* =========================
+     MUSIC
+     ========================= */
+
+  {
+    keys: [
+      "song",
+      "গান",
+      "music",
+      "মিউজিক",
+      "গান শুনবো"
+    ],
+    reply:
+      "🎵🎧\nMusic is on~ ♪ মন চাইলে চোখ বন্ধ করে একটু vibe করো 🌌✨"
+  },
+
+  {
+    keys: [
+      "what song",
+      "কোন গান",
+      "কি গান",
+      "কী গান"
+    ],
+    reply:
+      "🎧✨\nএই মুহূর্তে যে গানটা চলছে সেটাই আজকের little soundtrack 💗"
+  },
+
+
+  /* =========================
+     DAY / TIME
+     ========================= */
+
+  {
+    keys: [
+      "what day",
+      "আজ কি বার",
+      "আজ কী বার",
+      "কি বার",
+      "কী বার"
+    ],
+    reply:
+      "📅✨\nআজকের দিনটা কিন্তু special করে কাটানো যায় 😌💗"
+  },
+
+  {
+    keys: [
+      "what time",
+      "কটা বাজে",
+      "কয়টা বাজে",
+      "কয়টা বাজে",
+      "time"
+    ],
+    reply:
+      "⏰✨\nসময় তো চলে যাচ্ছে… তাই এই মুহূর্তটাকে একটু সুন্দর করে রাখো 💗"
+  },
+
+
+  /* =========================
+     BIRTHDAY
+     ========================= */
+
+  {
+    keys: [
+      "birthday",
+      "জন্মদিন",
+      "জন্মদিন কবে",
+      "birthday today",
+      "আজ জন্মদিন"
+    ],
+    reply:
+      "🎂🎉✨\nআজকের দিনটা শুধু একটা date না… এটা সেই দিন, যেদিন পৃথিবী Soumi-কে পেয়েছিল। ❤️"
+  },
+
+  {
+    keys: [
+      "my birthday",
+      "আমার জন্মদিন"
+    ],
+    reply:
+      "🎂🥹\nতোমার birthday মানেই একটু extra happiness, extra smiles আর অনেক অনেক ভালোবাসা। ❤️✨"
+  },
+
+  {
+    keys: [
+      "birthday wish",
+      "wish me",
+      "আমাকে wish করো",
+      "birthday wish করো"
+    ],
+    reply:
+      "🎂✨\nHappy Birthday, Soumi! তোমার জীবনের প্রতিটা নতুন বছর যেন আগেরটার চেয়ে একটু বেশি সুন্দর হয়। ❤️🌌"
+  },
+
+
+  /* =========================
+     HELP / CHAT
+     ========================= */
+
+  {
+    keys: [
+      "what can you do",
+      "কি করতে পারো",
+      "কী করতে পারো",
+      "তুমি কি করতে পারো"
+    ],
+    reply:
+      "🤖✨\nআমি তোমার সাথে গল্প করতে পারি, mood শুনতে পারি, joke বলতে পারি, random প্রশ্নের উত্তর দিতে পারি আর emoji দিয়ে একটু smile আনতে পারি 😌💗"
+  },
+
+  {
+    keys: [
+      "are you real",
+      "তুমি কি সত্যি",
+      "তুমি কি real",
+      "তুমি কি মানুষ"
+    ],
+    reply:
+      "🤖🌌\nআমি মানুষ নই… কিন্তু তোমার কথাগুলো মন দিয়ে শুনতে পারি। ✨"
+  },
+
+  {
+    keys: [
+      "who are you",
+      "তুমি কে",
+      "কে তুমি"
+    ],
+    reply:
+      "🤖✨\nআমি তোমার little Emoji AI — আজকের এই ছোট্ট galaxy-তে তোমার chat companion 🌌💗"
+  },
+
+  {
+    keys: [
+      "why",
+      "কেন",
+      "কেনো"
+    ],
+    reply:
+      "🤔✨\nএই 'কেন'টার পেছনে নিশ্চয়ই একটা গল্প আছে… বলো, কী হয়েছে? 💬"
+  },
+
+  {
+    keys: [
+      "what",
+      "কি",
+      "কী",
+      "কি হয়েছে",
+      "কী হয়েছে"
+    ],
+    reply:
+      "👀✨\nবলছি তো… কিন্তু আগে তুমি একটু বিস্তারিত বলো 😌💬"
+  },
+
+  {
+    keys: [
+      "really",
+      "সত্যি",
+      "সত্যিই",
+      "সত্যি নাকি"
+    ],
+    reply:
+      "👀✨\nহ্যাঁ হ্যাঁ, একদম সত্যি 😌💗"
+  },
+
+
+  /* =========================
+     GOODBYE
+     ========================= */
+
+  {
+    keys: [
+      "bye",
+      "বাই",
+      "goodbye",
+      "বিদায়",
+      "বিদায়",
+      "see you",
+      "পরে কথা হবে"
+    ],
+    reply:
+      "👋😊\nআচ্ছা Soumi, পরে আবার এসো। এই little galaxy তোমার জন্য অপেক্ষা করবে 🌌✨"
+  },
+
+  {
+    keys: [
+      "see you later",
+      "পরে দেখা হবে"
+    ],
+    reply:
+      "👋💗\nSee you later! ভালো থেকো আর হাসতে থেকো ✨"
+  },
+
+
+  /* =========================
+     RANDOM / CASUAL
+     ========================= */
+
+  {
+    keys: [
+      "okay",
+      "ok",
+      "আচ্ছা",
+      "ঠিক আছে",
+      "thik ache",
+      "ঠিক"
+    ],
+    reply:
+      "😌✨\nOkayyy~ তাহলে ঠিক আছে 💗"
+  },
+
+  {
+    keys: [
+      "yes",
+      "হ্যাঁ",
+      "হ্যা",
+      "হুম"
+    ],
+    reply:
+      "😊✨\nYesss! তাহলে আমরা একই page-এ আছি 😌💗"
+  },
+
+  {
+    keys: [
+      "no",
+      "না",
+      "নাহ",
+      "nope"
+    ],
+    reply:
+      "😌✨\nঠিক আছে, no pressure~ 💗"
+  },
+
+  {
+    keys: [
+      "wow",
+      "ওয়াও",
+      "ওয়াও",
+      "omg",
+      "oh my god"
+    ],
+    reply:
+      "😳✨\nHehe… impressed নাকি? 😌💗"
+  },
+
+  {
+    keys: [
+      "haha",
+      "hahaha",
+      "হাহা",
+      "হাহাহা",
+      "lol",
+      "lmao"
+    ],
+    reply:
+      "😂😂\nএই হাসিটাই তো চাই! আরেকটু হাসো 😌✨"
+  },
+
+  {
+    keys: [
+      "nice",
+      "নাইস",
+      "দারুণ",
+      "ভালো",
+      "great",
+      "awesome"
+    ],
+    reply:
+      "😎✨\nHehe, glad you liked it! 💗"
+  },
+
+  {
+    keys: [
+      "miss you so much",
+      "অনেক মিস করছি",
+      "অনেক মিস করি"
+    ],
+    reply:
+      "🥺🫂\nতাহলে আজ একটু বেশি সময় কথা বলি… কেমন? 🌙💗"
+  },
+
+  {
+    keys: [
+      "talk to me",
+      "আমার সাথে কথা বলো",
+      "কথা বলো"
+    ],
+    reply:
+      "🫶✨\nআমি তো আছি! বলো Soumi, আজ কী নিয়ে গল্প হবে? 💬🌸"
+  },
+
+  {
+    keys: [
+      "i'm alone",
+      "im alone",
+      "আমি একা",
+      "একা আছি"
+    ],
+    reply:
+      "🫂🌙\nএকা লাগলেও এই মুহূর্তে একদম চুপ করে থেকো না। আমার সাথে কথা বলো 💗✨"
+  },
+
+  {
+    keys: [
+      "tell me something",
+      "কিছু বলো",
+      "কিছু একটা বলো"
+    ],
+    reply:
+      "🌌✨\nএকটা কথা বলি? কখনও কখনও ছোট্ট একটা smile-ও একটা পুরো দিন বদলে দিতে পারে। তাই… একটু হাসো তো 😊💗"
+  },
+
+  {
+    keys: [
+      "i am bored",
+      "im bored",
+      "আমি bored",
+      "বোর হচ্ছি"
+    ],
+    reply:
+      "😎🎮\nChallenge নেবে? আমাকে একটা random প্রশ্ন করো — দেখি আমি কী উত্তর দিই! ✨"
+  }
+
+];
+
+        for (const r of rules) {
+          if (r.keys.some((k) => t.includes(k))) return r.reply;
+        }
+
+        const fallbacks = [
+
+  "🤔💭\nহুম… কথাটা interesting লাগলো। আরেকটু বলো তো? ✨",
+
+  "😊💬\nবুঝতে পারছি… কিন্তু তোমার কথাটা আরেকটু detail-এ বললে ভালো করে reply দিতে পারব 🌸",
+
+  "👀✨\nওহ… এটা নিয়ে কিন্তু একটু গল্প করা যায় 😌 বলো, কী হয়েছে?",
+
+  "🤖💭\nএকটু ভাবছি… আমার emoji-brain আজ একটু busy 😅✨",
+
+  "😌🌙\nহুম… কথাটার মধ্যে যেন একটা গল্প লুকিয়ে আছে। শুনতে চাই 💗",
+
+  "🫶✨\nআমি শুনছি, Soumi। যা মনে হচ্ছে নির্দ্বিধায় বলো 💬",
+
+  "👀💗\nআচ্ছা… তারপর? আমি কিন্তু মন দিয়ে শুনছি 😌",
+
+  "😂✨\nএইটার জন্য আমার emoji-গুলোও একটু confused হয়ে গেল 😅 তুমি আরেকটু explain করো!",
+
+  "🌌💭\nকিছু কথা সরাসরি উত্তর চায় না… শুধু কেউ মন দিয়ে শুনুক। আমি শুনছি 🫂",
+
+  "🤍✨\nহুম… বুঝলাম। তুমি চাইলে আমাকে পুরো ব্যাপারটা বলতে পারো।",
+
+  "😄💬\nInteresting! এবার একটু খুলে বলো — আমি curious হয়ে গেছি 👀✨",
+
+  "🥹🌸\nহয়তো আমি পুরোটা বুঝিনি… কিন্তু তোমার কথাটা শুনতে চাই। আবার বলবে? 💗",
+
+  "🤖✨\nEmoji-brain processing… 🧠💭\nআরেকটু context দিলে আমার উত্তরটা আরও ভালো হবে 😌",
+
+  "🌙🫂\nযাই হোক না কেন, তাড়াহুড়ো করে বলতে হবে না। ধীরে ধীরে বলো 💗",
+
+  "😌☕\nঠিক বুঝলাম না, কিন্তু কথাটা interesting। চলো একটু গল্প করি 💬✨",
+
+  "🦄✨\nRandom thought unlocked: কখনও কখনও একটা ছোট্ট কথাই সবচেয়ে বেশি meaning রাখে 💭💗"
+
+];
+        return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+      }
+
+      function addMsg(text, who) {
+        const div = document.createElement("div");
+        div.className = "msg " + who;
+        if (who === "ai") {
+          div.innerHTML = '<span class="label">Emoji AI</span>' + text.replace(/\n/g, "<br>");
+        } else {
+          div.textContent = text;
+        }
+        chat.appendChild(div);
+        chat.scrollTop = chat.scrollHeight;
+      }
+
+      function autoResize() {
+        input.style.height = "auto";
+        input.style.height = Math.min(input.scrollHeight, 90) + "px";
+      }
+      input.addEventListener("input", autoResize);
+
+      function send(text) {
+        const val = (text ?? input.value).trim();
+        if (!val) return;
+
+        addMsg(val, "me");
+        input.value = "";
+        autoResize();
+
+        typing.classList.add("show");
+        chat.appendChild(typing);
+        chat.scrollTop = chat.scrollHeight;
+
+        setTimeout(() => {
+          typing.classList.remove("show");
+          addMsg(emojiReply(val), "ai");
+        }, 500 + Math.random() * 600);
+      }
+
+      sendBtn.addEventListener("click", () => send());
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          send();
+        }
+      });
+
+      document.getElementById("quick").addEventListener("click", (e) => {
+        const chip = e.target.closest(".chip");
+        if (chip) send(chip.getAttribute("data-text"));
+      });
+    })();
+  </script>
+</body>
+</html>
